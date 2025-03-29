@@ -4,24 +4,30 @@ import pytest
 import pandas as pd
 import matplotlib.pyplot as plt
 from playwright.sync_api import sync_playwright
+import os
 
-# File to store test results
-LOG_FILE = "test_results.csv"
+# Ensure output directory exists
+OUTPUT_DIR = "artifacts"
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+# Define file paths for results and report
+LOG_FILE = os.path.join(OUTPUT_DIR, "test_results.csv")
+REPORT_FILE = os.path.join(OUTPUT_DIR, "test_report.png")
 
 # Mock data: List of test cases (URLs and expected HTTP status)
 MOCK_DATA = [
-    ("https://example.com", 200),
+    ("https://elverys.ie", 200),
     ("https://playwright.dev", 200),
 ]
 
-# Ensure CSV file is initialized (create an empty file)
+# Ensure CSV file is initialized with headers
 with open(LOG_FILE, "w") as f:
-    f.write("timestamp,url,passed,status\n")  # Write CSV header
+    f.write("timestamp,url,passed,status\n")
 
 
 @pytest.fixture(scope="session")
 def browser():
-    """Fixture to initialize and close a Playwright browser instance."""
+    """Initialize and close a Playwright browser instance."""
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         yield browser
@@ -40,7 +46,6 @@ def test_flaky_page(browser, url, expected_status):
     page.goto(url)
     time.sleep(random.uniform(0.1, 0.5))  # Simulate variable load time
 
-    # Simulating a flaky test with an 80% pass rate
     test_passed = random.random() < 0.8  # 80% chance of success
     status_code = expected_status if test_passed else 500  # 500 for simulated failures
 
@@ -48,14 +53,13 @@ def test_flaky_page(browser, url, expected_status):
     with open(LOG_FILE, "a") as f:
         f.write(f"{time.time()},{url},{test_passed},{status_code}\n")
 
-    # Assert that test passes (this introduces the flakiness)
     assert test_passed, f"Test failed for {url} with status {status_code}"
 
 
 def generate_report():
     """
-    Reads the test results from the CSV file and generates a bar graph
-    showing the number of passed vs. failed test cases for each URL.
+    Reads test results and generates a bar graph
+    showing the number of passed vs. failed test cases.
     """
     try:
         df = pd.read_csv(LOG_FILE)  # Read test results CSV
@@ -68,12 +72,12 @@ def generate_report():
         plt.title("Flaky Test Results Over 100 Runs")
         plt.legend(["Failed", "Passed"])
 
-        # Save the graph as an image
-        plt.savefig("test_report.png")
-        print("Report generated: test_report.png")
+        # Save the graph
+        plt.savefig(REPORT_FILE)
+        print(f"✅ Report generated: {REPORT_FILE}")
     except Exception as e:
-        print(f"Error generating report: {e}")
+        print(f"❌ Error generating report: {e}")
 
 
 if __name__ == "__main__":
-    generate_report()  # Run report generation when executed directly
+    generate_report()
