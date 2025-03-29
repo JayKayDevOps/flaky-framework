@@ -62,7 +62,13 @@ def generate_report():
     showing the number of passed vs. failed test cases.
     """
     try:
-        df = pd.read_csv(LOG_FILE)  # Read test results CSV
+        # Read test results CSV with proper data type conversion
+        df = pd.read_csv(LOG_FILE)
+
+        # Convert 'passed' column to boolean
+        df["passed"] = df["passed"].astype(bool)
+
+        # Group by URL and count pass/fail occurrences
         pass_fail_counts = df.groupby("url")["passed"].value_counts().unstack(fill_value=0)
 
         # Plot test results as a stacked bar graph
@@ -77,6 +83,8 @@ def generate_report():
         print(f"✅ Report generated: {REPORT_FILE}")
     except Exception as e:
         print(f"❌ Error generating report: {e}")
+        print(df.head())  # Debug: Print first few rows of the CSV data
+
 
 
 if __name__ == "__main__":
