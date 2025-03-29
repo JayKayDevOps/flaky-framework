@@ -1,6 +1,6 @@
 name: Run Playwright Tests with Flaky Simulation
 
-on: [push, pull_request]  # Trigger the pipeline on push or pull requests
+on: [push, pull_request]  # Trigger on push or pull requests
 
 jobs:
   test:
@@ -24,7 +24,8 @@ jobs:
 
       - name: Initialize CSV File
         run: |
-          echo "timestamp,url,passed,status" > test_results.csv  # Create empty CSV file
+          mkdir -p artifacts  # Ensure artifacts directory exists
+          echo "timestamp,url,passed,status" > artifacts/test_results.csv  # Create empty CSV file
 
       - name: Run Playwright Tests 10 Times
         run: |
@@ -38,10 +39,12 @@ jobs:
           source venv/bin/activate
           python test_flaky_playwright.py  # Generate the test report
 
+      - name: Debug - Check if Artifacts Exist
+        run: |
+          ls -lah artifacts  # List all files to ensure they exist before upload
+
       - name: Upload Test Report and CSV Data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: flaky-test-results
-          path: |
-            test_report.png  # Save the graph report
-            test_results.csv  # Save the raw test data
+          path: artifacts/
