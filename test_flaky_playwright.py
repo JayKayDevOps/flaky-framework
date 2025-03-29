@@ -16,8 +16,8 @@ REPORT_FILE = os.path.join(OUTPUT_DIR, "test_report.png")
 
 # Mock data: List of test cases (URLs and expected HTTP status)
 MOCK_DATA = [
-    ("https://example.com", 200),
-    ("https://playwright.dev", 200),
+    ("https://elverys.ie", 200),
+    ("https://www.lifestylesports.com", 200),
 ]
 
 # Ensure CSV file is initialized with headers
