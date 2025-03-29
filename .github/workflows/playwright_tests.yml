@@ -1,39 +1,44 @@
 name: Run Playwright Tests with Flaky Simulation
 
-on: [push, pull_request]
+on: [push, pull_request]  # Trigger on push or pull requests
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  # Get the repository code
 
       - name: Set Up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: "3.10"  # Specify Python version
 
       - name: Install Dependencies
         run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install playwright pytest matplotlib pandas
-          playwright install
+          python -m venv venv  # Create a virtual environment
+          source venv/bin/activate  # Activate virtual environment
+          pip install playwright pytest matplotlib pandas  # Install required libraries
+          playwright install  # Install Playwright browsers
 
       - name: Run Playwright Tests 100 Times
         run: |
           source venv/bin/activate
           rm -f test_results.csv  # Clear previous results
+          
+          # Run tests 100 times to collect flaky test data
           for i in {1..100}; do pytest test_flaky_playwright.py || true; done
 
       - name: Generate Test Report
         run: |
           source venv/bin/activate
-          python test_flaky_playwright.py  # This runs the report function
+          python test_flaky_playwright.py  # Generate the test report
 
-      - name: Upload Test Report
+      - name: Upload Test Report and CSV Data
         uses: actions/upload-artifact@v4
         with:
-          name: flaky-test-report
-          path: test_report.png
+          name: flaky-test-results
+          path: |
+            test_report.png  # Save the graph report
+            test_results.csv  # Save the raw test data
