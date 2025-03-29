@@ -16,13 +16,14 @@ REPORT_FILE = os.path.join(OUTPUT_DIR, "test_report.png")
 
 # Mock data: List of test cases (URLs and expected HTTP status)
 MOCK_DATA = [
-    ("https://elverys.ie", 200),
+    ("https://example.com", 200),
     ("https://playwright.dev", 200),
 ]
 
 # Ensure CSV file is initialized with headers
-with open(LOG_FILE, "w") as f:
-    f.write("timestamp,url,passed,status\n")
+if not os.path.exists(LOG_FILE):
+    with open(LOG_FILE, "w") as f:
+        f.write("timestamp,url,passed,status\n")
 
 
 @pytest.fixture(scope="session")
@@ -51,7 +52,7 @@ def test_flaky_page(browser, url, expected_status):
 
     # Log test result (timestamp, URL, pass/fail, status)
     with open(LOG_FILE, "a") as f:
-        f.write(f"{time.time()},{url},{test_passed},{status_code}\n")
+        f.write(f"{time.time()},{url},{int(test_passed)},{status_code}\n")  # Ensure 'passed' is int (1/0)
 
     assert test_passed, f"Test failed for {url} with status {status_code}"
 
@@ -62,11 +63,15 @@ def generate_report():
     showing the number of passed vs. failed test cases.
     """
     try:
-        # Read test results CSV with proper data type conversion
+        # Read CSV with proper data type conversion
         df = pd.read_csv(LOG_FILE)
 
-        # Convert 'passed' column to boolean
-        df["passed"] = df["passed"].astype(bool)
+        if df.empty:
+            raise ValueError("❌ CSV file is empty. No data to plot.")
+
+        # Convert columns to correct types
+        df["passed"] = df["passed"].astype(int)  # Ensure passed is numeric
+        df["status"] = df["status"].astype(int)  # Ensure status is numeric
 
         # Group by URL and count pass/fail occurrences
         pass_fail_counts = df.groupby("url")["passed"].value_counts().unstack(fill_value=0)
@@ -81,10 +86,14 @@ def generate_report():
         # Save the graph
         plt.savefig(REPORT_FILE)
         print(f"✅ Report generated: {REPORT_FILE}")
+
     except Exception as e:
         print(f"❌ Error generating report: {e}")
-        print(df.head())  # Debug: Print first few rows of the CSV data
-
+        print("🔎 Debugging CSV contents:")
+        try:
+            print(pd.read_csv(LOG_FILE).head())  # Print first few rows for debugging
+        except Exception as debug_e:
+            print(f"⚠️ Failed to read CSV: {debug_e}")
 
 
 if __name__ == "__main__":
