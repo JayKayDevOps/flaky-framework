@@ -18,6 +18,8 @@ REPORT_FILE = os.path.join(OUTPUT_DIR, "test_report.png")
 MOCK_DATA = [
     ("https://elverys.ie", 200),
     ("https://www.lifestylesports.com", 200),
+    ("https://bbc.co.uk", 200),
+    ("https://rte.ie", 200)
 ]
 
 # Ensure CSV file is initialized with headers
