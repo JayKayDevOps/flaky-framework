@@ -1,6 +1,6 @@
 name: Run Playwright Tests with Flaky Simulation
 
-on: [push, pull_request]  # Trigger on push or pull requests
+on: [push, pull_request]  # Trigger the pipeline on push or pull requests
 
 jobs:
   test:
@@ -22,13 +22,16 @@ jobs:
           pip install playwright pytest matplotlib pandas  # Install required libraries
           playwright install  # Install Playwright browsers
 
-      - name: Run Playwright Tests 100 Times
+      - name: Initialize CSV File
+        run: |
+          echo "timestamp,url,passed,status" > test_results.csv  # Create empty CSV file
+
+      - name: Run Playwright Tests 10 Times
         run: |
           source venv/bin/activate
-          rm -f test_results.csv  # Clear previous results
           
-          # Run tests 100 times to collect flaky test data
-          for i in {1..100}; do pytest test_flaky_playwright.py || true; done
+          # Run tests 10 times and log results
+          for i in {1..10}; do pytest test_flaky_playwright.py || true; done
 
       - name: Generate Test Report
         run: |
