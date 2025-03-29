@@ -38,7 +38,7 @@ if not os.path.exists(LOG_FILE):
 def browser():
     """Initialize and close a Playwright browser instance."""
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         yield browser
         browser.close()
 
