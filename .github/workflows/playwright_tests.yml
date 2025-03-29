@@ -44,7 +44,7 @@ jobs:
           ls -lah artifacts  # List all files to ensure they exist before upload
 
       - name: Upload Test Report and CSV Data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: flaky-test-results
           path: artifacts/
