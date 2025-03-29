@@ -22,10 +22,10 @@ MOCK_DATA = [
     ("https://rte.ie", 200),
     ("https://www.jdsports.ie", 200),
     ("https://duke.edu", 200),
-    ("https://ie.sportsdirect.com", 200),
-    ("https://www.prodirectsport.com/soccer", 200),
-    ("https://www.nike.com/ie", 200),   
-    ("https://www.crocs.eu/", 200)
+    ("https://sportsdirect.com", 200),
+    ("https://www.prodirectsport.com", 200),
+    ("https://www.nike.com", 200),   
+    ("https://www.crocs.eu", 200)
 ]
 
 # Ensure CSV file is initialized with headers
