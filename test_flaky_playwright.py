@@ -85,7 +85,7 @@ def generate_report():
         pass_fail_counts = df.groupby("url")["passed"].value_counts().unstack(fill_value=0)
 
         # Plot test results as a stacked bar graph
-        pass_fail_counts.plot(kind="bar", stacked=True, color=["green", "red"])
+        pass_fail_counts.plot(kind="bar", stacked=True, color=["red", "green"])
         plt.xlabel("Test URL")
         plt.ylabel("Test Count")
         plt.title("Flaky Test Results Over 100 Runs")
