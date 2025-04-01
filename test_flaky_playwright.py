@@ -22,7 +22,7 @@ MOCK_DATA = [
     ("https://rte.ie", 200),
     ("https://www.jdsports.ie", 200),
     ("https://duke.edu", 200),
-    ("https://sportsdirect.com", 200),
+    ("https://en.wikipedia.org", 200),
     ("https://www.prodirectsport.com", 200),
     ("https://www.nike.com", 200),   
     ("https://www.crocs.eu", 200)
