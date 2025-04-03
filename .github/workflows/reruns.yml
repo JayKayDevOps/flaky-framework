@@ -32,7 +32,7 @@ jobs:
         run: |
           source venv/bin/activate
           # Run tests with automatic reruns - try up to 3 times with 1 second delay
-          pytest rerun-flaky-playwright.py --reruns 3 --reruns-delay 1 || true
+          for i in {1..20}; dopytest rerun-flaky-playwright.py --reruns 3 --reruns-delay 1 || true; done
 
       - name: Generate Test Reports
         run: |
