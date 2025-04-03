@@ -1,0 +1,52 @@
+name: Run Playwright Tests with Flaky Detection
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install playwright pytest matplotlib pandas pytest-rerunfailures
+          playwright install
+
+      - name: Initialize CSV Files
+        run: |
+          mkdir -p artifacts
+          echo "timestamp,url,passed,status,attempt" > artifacts/test_results.csv
+          echo "url,total_runs,failures,flaky_rate,categorization" > artifacts/flaky_tests.csv
+
+      - name: Run Playwright Tests with Reruns
+        run: |
+          source venv/bin/activate
+          # Run tests with automatic reruns - try up to 3 times with 1 second delay
+          pytest test_flaky_playwright.py --reruns 3 --reruns-delay 1 || true
+
+      - name: Generate Test Reports
+        run: |
+          source venv/bin/activate
+          python test_flaky_playwright.py
+
+      - name: Debug - Check if Artifacts Exist
+        run: |
+          ls -lah artifacts
+          cat artifacts/test_results.csv | head -n 20
+          cat artifacts/flaky_tests.csv
+
+      - name: Upload Test Reports and Data
+        uses: actions/upload-artifact@v4
+        with:
+          name: flaky-test-results
+          path: artifacts/
