@@ -32,12 +32,12 @@ jobs:
         run: |
           source venv/bin/activate
           # Run tests with automatic reruns - try up to 3 times with 1 second delay
-          pytest test_flaky_playwright.py --reruns 3 --reruns-delay 1 || true
+          pytest rerun-flaky-playwright.py --reruns 3 --reruns-delay 1 || true
 
       - name: Generate Test Reports
         run: |
           source venv/bin/activate
-          python test_flaky_playwright.py
+          python rerun-flaky-playwright.py
 
       - name: Debug - Check if Artifacts Exist
         run: |
