@@ -1,6 +1,13 @@
 name: Run Playwright Tests with Flaky Detection
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:  # 👈 Manual trigger via GitHub UI
 
 jobs:
   test:
